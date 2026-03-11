@@ -3,266 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Livros do Novo Testamento</title>
+
+<title>Estudo Bíblico</title>
 
 <style>
-body {
-    font-family: 'Roboto', sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: auto;
-    margin: 0;
-    padding: 20px;
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+background:#f4f4f4;
+padding:30px;
+text-align:center;
 }
 
-h1 {
-    color: #333;
-    margin-bottom: 20px;
+h1{
+color:#333;
 }
 
-.search-bar {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+.container{
+max-width:800px;
+margin:auto;
 }
 
-input[type="text"] {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 200px;
-}
-
-button {
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    padding: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-.quiz-container {
-    margin-top: 30px;
-    width: 100%;
-    max-width: 600px;
-}
-
-.question {
-    margin: 10px 0;
-}
-
-.result {
-    margin-top: 20px;
-}
-
-/* NOVA ÁREA DE ESTUDOS */
-
-.study-container{
-margin-top:30px;
-width:100%;
-max-width:600px;
+.buttons{
 display:flex;
 flex-wrap:wrap;
-gap:10px;
 justify-content:center;
+gap:10px;
+margin-top:20px;
 }
 
-.study-content{
-margin-top:20px;
-background:white;
-padding:20px;
-border-radius:8px;
-box-shadow:0 0 5px rgba(0,0,0,0.1);
-max-width:600px;
+button{
+
+background:#007BFF;
+color:white;
+border:none;
+padding:12px 16px;
+border-radius:5px;
+cursor:pointer;
+font-size:16px;
+transition:0.3s;
+
 }
+
+button:hover{
+
+background:#0056b3;
+transform:scale(1.05);
+
+}
+
+.estudo{
+
+margin-top:30px;
+background:white;
+padding:25px;
+border-radius:8px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+text-align:left;
+
+}
+
 </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Estudo Bíblico</h1>
+
+<div id="buttons" class="buttons"></div>
+
+<div id="conteudo" class="estudo">
+Clique em um estudo para visualizar o conteúdo.
+</div>
+
+</div>
 
 <script>
 
-let livros = [];
-let quiz = [];
-let estudos = [];
+let estudos=[];
 
-let score = 0;
-let currentQuestionIndex = 0;
+async function carregarEstudos(){
 
+const resposta = await fetch("estudos.json");
 
-// =============================
-// CARREGAR JSON
-// =============================
+estudos = await resposta.json();
 
-async function loadBooks() {
-    const response = await fetch('livros.json');
-    livros = await response.json();
-}
-
-async function loadQuiz() {
-    const response = await fetch('quiz.json');
-    quiz = await response.json();
-    displayQuestion();
-}
-
-/* NOVA FUNÇÃO */
-async function loadEstudos(){
-const response = await fetch('estudos.json');
-estudos = await response.json();
-renderStudyButtons();
-}
-
-
-// =============================
-// QUIZ
-// =============================
-
-function displayQuestion() {
-const questionContainer = document.getElementById("questionContainer");
-
-const currentQuestion = quiz[currentQuestionIndex];
-
-questionContainer.innerHTML = `
-<div class="question">${currentQuestion.pergunta}</div>
-
-${currentQuestion.opcoes.map((opcao,index)=>`
-<button onclick="checkAnswer('${opcao}')">${opcao}</button>
-`).join('')}
-
-`;
-}
-
-function checkAnswer(selectedOption) {
-
-const currentQuestion = quiz[currentQuestionIndex];
-
-if (selectedOption === currentQuestion.resposta_correta){
-score++;
-}
-
-currentQuestionIndex++;
-
-if(currentQuestionIndex < quiz.length){
-displayQuestion();
-}else{
-showResult();
-}
+criarBotoes();
 
 }
 
-function showResult(){
+function criarBotoes(){
 
-const questionContainer = document.getElementById("questionContainer");
+const area = document.getElementById("buttons");
 
-questionContainer.innerHTML = `
-<div class="result">Você acertou ${score} de ${quiz.length} perguntas!</div>
+area.innerHTML="";
 
-<button onclick="resetQuiz()">Reiniciar Quiz</button>
-`;
+estudos.forEach((estudo,index)=>{
 
-}
+const botao=document.createElement("button");
 
-function resetQuiz(){
-score = 0;
-currentQuestionIndex = 0;
-displayQuestion();
-}
+botao.innerText=estudo.titulo;
 
+botao.onclick=()=>mostrarEstudo(index);
 
-// =============================
-// BUSCA LIVROS
-// =============================
+area.appendChild(botao);
 
-function searchBook(){
-
-const input = document.getElementById("bookSearch").value.toLowerCase().trim();
-
-const foundBook = livros.find(book=>book.titulo.toLowerCase()===input);
-
-if(foundBook){
-window.location.href = foundBook.url;
-}else{
-alert('Livro não encontrado. Tente novamente.');
-}
+});
 
 }
 
+function mostrarEstudo(index){
 
-// =============================
-// SISTEMA DE ESTUDO
-// =============================
+const estudo = estudos[index];
 
-function renderStudyButtons(){
+const area=document.getElementById("conteudo");
 
-const container = document.getElementById("studyButtons");
-
-container.innerHTML = estudos.map(estudo=>`
-<button onclick="openStudy('${estudo.titulo}')">${estudo.titulo}</button>
-`).join('');
-
-}
-
-function openStudy(titulo){
-
-const estudo = estudos.find(e=>e.titulo === titulo);
-
-const content = document.getElementById("studyContent");
-
-content.innerHTML = `
-<h3>${estudo.titulo}</h3>
+area.innerHTML = `
+<h2>${estudo.titulo}</h2>
 <p>${estudo.conteudo}</p>
 `;
 
 }
 
-
-// =============================
-// LOAD
-// =============================
-
-window.onload = async () => {
-
-await loadBooks();
-await loadQuiz();
-await loadEstudos();
-
-}
+carregarEstudos();
 
 </script>
-</head>
-
-<body>
-
-<h1>Livros do Novo Testamento</h1>
-
-<div class="search-bar">
-<input type="text" id="bookSearch" placeholder="Digite o nome de um livro...">
-<button onclick="searchBook()">Buscar</button>
-</div>
-
-
-<!-- QUIZ -->
-
-<div class="quiz-container" id="questionContainer"></div>
-
-
-<!-- ESTUDOS -->
-
-<h2>Área de Estudos</h2>
-
-<div class="study-container" id="studyButtons"></div>
-
-<div class="study-content" id="studyContent"></div>
-
 
 </body>
 </html>
