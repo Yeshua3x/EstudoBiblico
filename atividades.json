@@ -1,0 +1,18 @@
+[
+    {
+        "titulo": "Estudo sobre os Evangelhos",
+        "url": "estudo1.html"
+    },
+    {
+        "titulo": "Estudo sobre as Cartas de Paulo",
+        "url": "estudo2.html"
+    },
+    {
+        "titulo": "Estudo sobre Apocalipse",
+        "url": "estudo3.html"
+    },
+    {
+        "titulo": "Explorar Temas de Estudo",
+        "url": "temas.html"
+    }
+]
