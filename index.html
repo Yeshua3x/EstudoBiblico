@@ -3,70 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudos Bíblicos</title>
+    <title>Estudo Bíblico</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: auto;
-            margin: 0;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .study-links {
-            margin-top: 30px;
+        #conteudoEstudo {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            display: none; /* Esconde inicialmente */
         }
         button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
+            margin: 5px;
             padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin: 5px 0;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        button:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
         }
     </style>
-    <script>
-        let atividades = [];
-
-        async function loadAtividades() {
-            const response = await fetch('atividades.json');
-            atividades = await response.json();
-            displayStudyLinks();
-        }
-
-        function displayStudyLinks() {
-            const linksContainer = document.getElementById("studyLinks");
-            linksContainer.innerHTML = `
-                <h2>Estudos Bíblicos</h2>
-                ${atividades.map(atividade => `
-                    <button onclick="location.href='${atividade.url}'">${atividade.titulo}</button>
-                `).join('')}
-                <button onclick="location.href='index.html'">Retornar à Página Inicial</button>
-            `;
-        }
-
-        window.onload = loadAtividades;
-    </script>
 </head>
 <body>
 
-    <h1>Estudos Bíblicos</h1>
+    <h1>Estudo Bíblico</h1>
+    <button onclick="carregarEstudo('estudo1')">Estudo 1</button>
+    <button onclick="carregarEstudo('estudo2')">Estudo 2</button>
+    <button onclick="carregarEstudo('estudo3')">Estudo 3</button>
 
-    <div class="study-links" id="studyLinks"></div>
+    <div id="conteudoEstudo"></div>
+
+    <script>
+        function carregarEstudo(estudo) {
+            fetch('estudos.json')
+                .then(response => response.json())
+                .then(data => {
+                    const conteudoDiv = document.getElementById('conteudoEstudo');
+                    conteudoDiv.innerHTML = `<h2>${data[estudo].titulo}</h2><p>${data[estudo].conteudo}</p>`;
+                    conteudoDiv.style.display = 'block'; // Mostra a div após carregar o conteúdo
+                })
+                .catch(error => console.error('Erro ao carregar o conteúdo:', error));
+        }
+    </script>
 
 </body>
 </html>
